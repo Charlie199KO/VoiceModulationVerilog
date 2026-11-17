@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.py[cod]
+build/*.vvp
+*.vcd
+data/input_samples/*.hex
+data/output_samples/*.hex
+reports/*.png
+reports/*.csv
