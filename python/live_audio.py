@@ -1,7 +1,7 @@
 """Buffered live microphone-to-speaker processing using SoundDevice.
 
 The audio callback only moves fixed-size blocks between queues. DSP work is
-performed on a worker thread so plotting and heavier pitch effects do not run
+performed on a worker thread so heavier pitch effects do not run
 inside the PortAudio callback.
 """
 from __future__ import annotations

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Voice Modulator accepts live microphone audio or a recorded WAV file and applies selected voice effects. Python provides the application, audio I/O, advanced pitch effects and visualization. Verilog implements a fixed-point DSP core for a subset of effects.
+The Voice Modulator accepts live microphone audio or a recorded WAV file and applies selected voice effects. Python provides the application, audio I/O, and advanced pitch effects. Verilog implements a fixed-point DSP core for a subset of effects.
 
 ## Operating paths
 

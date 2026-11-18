@@ -4,7 +4,6 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from pathlib import Path
-import threading
 
 import numpy as np
 
@@ -21,13 +20,6 @@ try:
 except ImportError:
     sd = None
 
-try:
-    from matplotlib.figure import Figure
-    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-except ImportError:
-    Figure = None
-    FigureCanvasTkAgg = None
-
 
 PRESET_LABEL_TO_KEY = {preset.label: key for key, preset in PRESETS.items()}
 
@@ -36,8 +28,8 @@ class VoiceModulatorApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Programmable Voice Modulator")
-        self.root.geometry("1120x800")
-        self.root.minsize(920, 680)
+        self.root.geometry("1000x740")
+        self.root.minsize(860, 730)
 
         self.input_path: Path | None = None
         self.original_samples: np.ndarray | None = None
@@ -167,19 +159,6 @@ class VoiceModulatorApp:
         ttk.Label(status, textvariable=self.input_count_var).pack(anchor="w")
         ttk.Label(status, textvariable=self.output_count_var).pack(anchor="w")
 
-        graph_box = ttk.LabelFrame(outer, text="Audio analysis", padding=6)
-        graph_box.pack(fill="both", expand=True, pady=5)
-        if Figure is not None and FigureCanvasTkAgg is not None:
-            self.figure = Figure(figsize=(8, 3.2), dpi=90)
-            self.wave_ax = self.figure.add_subplot(211)
-            self.spec_ax = self.figure.add_subplot(212)
-            self.figure.tight_layout()
-            self.canvas = FigureCanvasTkAgg(self.figure, master=graph_box)
-            self.canvas.get_tk_widget().pack(fill="both", expand=True)
-            self._plot_empty()
-        else:
-            ttk.Label(graph_box, text="Install matplotlib to enable waveform and spectrum plots.").pack(pady=20)
-
     def _preset_key(self) -> str:
         return PRESET_LABEL_TO_KEY[self.preset_var.get()]
 
@@ -237,7 +216,6 @@ class VoiceModulatorApp:
         self.file_var.set(f"{self.input_path.name} — {samples.size:,} mono samples at {config.SAMPLE_RATE} Hz")
         self.input_count_var.set(f"Input samples: {samples.size:,}")
         self.output_count_var.set("Output samples: —")
-        self._plot_audio(self.original_samples, None)
         self.status_var.set("WAV file loaded and converted to 16 kHz mono PCM16.")
 
     def process_file(self) -> None:
@@ -259,7 +237,6 @@ class VoiceModulatorApp:
         self.processed_samples = processed
         self.processed_path = saved
         self.output_count_var.set(f"Output samples: {processed.size:,}")
-        self._plot_audio(self.original_samples, self.processed_samples)
         self.status_var.set(f"Completed using {backend}. Saved: {saved.name}")
         messagebox.showinfo("Processing complete", f"Processed audio saved to:\n{saved}")
 
@@ -368,53 +345,6 @@ class VoiceModulatorApp:
             except Exception:
                 pass
         self.status_var.set("Live processing stopped.")
-
-    def _plot_empty(self) -> None:
-        self.wave_ax.clear()
-        self.spec_ax.clear()
-        self.wave_ax.set_title("Audio waveform")
-        self.spec_ax.set_title("Frequency spectrum")
-        self.canvas.draw_idle()
-
-    def _plot_audio(self, original: np.ndarray | None, processed: np.ndarray | None) -> None:
-        if Figure is None or original is None:
-            return
-        self.wave_ax.clear()
-        self.spec_ax.clear()
-        count = min(len(original), config.SAMPLE_RATE * 2)
-        time_axis = np.arange(count) / config.SAMPLE_RATE
-        self.wave_ax.plot(time_axis, int16_to_float(original[:count]), label="Original", linewidth=0.8)
-        if processed is not None:
-            count_out = min(len(processed), config.SAMPLE_RATE * 2)
-            self.wave_ax.plot(np.arange(count_out) / config.SAMPLE_RATE,
-                              int16_to_float(processed[:count_out]), label="Processed", linewidth=0.8, alpha=0.8)
-        self.wave_ax.set_title("Audio waveform (first 2 seconds)")
-        self.wave_ax.set_xlabel("Time (s)")
-        self.wave_ax.set_ylabel("Amplitude")
-        self.wave_ax.grid(True, alpha=0.25)
-        self.wave_ax.legend(loc="upper right")
-
-        def add_spectrum(data: np.ndarray, label: str) -> None:
-            data = int16_to_float(data)
-            if data.size < 2:
-                return
-            segment = data[: min(data.size, 16_384)]
-            window = np.hanning(segment.size)
-            spectrum = np.abs(np.fft.rfft(segment * window))
-            frequencies = np.fft.rfftfreq(segment.size, 1.0 / config.SAMPLE_RATE)
-            spectrum_db = 20 * np.log10(np.maximum(spectrum, 1e-8))
-            self.spec_ax.plot(frequencies, spectrum_db, label=label, linewidth=0.8)
-
-        add_spectrum(original, "Original")
-        if processed is not None:
-            add_spectrum(processed, "Processed")
-        self.spec_ax.set_title("Frequency spectrum (software FFT analysis)")
-        self.spec_ax.set_xlabel("Frequency (Hz)")
-        self.spec_ax.set_ylabel("Magnitude (dB, relative)")
-        self.spec_ax.grid(True, alpha=0.25)
-        self.spec_ax.legend(loc="upper right")
-        self.figure.tight_layout()
-        self.canvas.draw_idle()
 
     def _refresh_status(self) -> None:
         if self.live_engine is not None:

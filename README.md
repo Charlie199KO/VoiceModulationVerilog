@@ -8,7 +8,6 @@ A second-year engineering project demonstrating digital voice effects using a Py
 - **Python WAV mode:** loads, processes, plays and saves recorded WAV audio.
 - **Verilog simulation mode:** runs the actual Verilog modules in Icarus Verilog for recorded audio samples.
 - **Verification:** compares Verilog results against a matching Python fixed-point reference.
-- **Visual analysis:** waveform and frequency-spectrum plots in the GUI.
 
 > There is no FPGA integration in this version. Live microphone processing is performed by Python. Icarus Verilog processes recorded sample files in simulation; it is not used as a real-time microphone audio engine.
 
