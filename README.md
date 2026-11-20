@@ -172,7 +172,7 @@ The script prints a sample-by-sample comparison report and saves the Verilog res
 
 ## Verilog mode encoding
 
-The mode values are defined in `verilog/mode_selector.v` and mirrored in `python/config.py`:
+The mode values are defined in `verilog/DesignCode.v` and mirrored in `python/config.py`:
 
 | Mode | Effect |
 |---:|---|

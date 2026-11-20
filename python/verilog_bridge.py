@@ -39,14 +39,7 @@ class VerilogBridge:
     def compile(self) -> Path:
         iverilog = self._tool("iverilog")
         sources = [
-            "verilog/bypass.v",
-            "verilog/ring_modulator.v",
-            "verilog/echo_unit.v",
-            "verilog/radio_filter.v",
-            "verilog/volume_control.v",
-            "verilog/mode_selector.v",
-            "verilog/voice_dsp_core.v",
-            "verilog/top_module.v",
+            "verilog/DesignCode.v",
             "testbench/tb_audio_file.v",
         ]
         command = [iverilog, "-g2012", "-Wall", "-o", str(self.simulator_path), *sources]

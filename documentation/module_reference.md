@@ -16,12 +16,13 @@
 
 ## Verilog modules
 
-- `bypass.v`: one-cycle registered pass-through.
-- `ring_modulator.v`: square-carrier polarity modulation with configurable half-period.
-- `echo_unit.v`: 4,096-sample circular delay memory and Q1.15 echo gain.
-- `radio_filter.v`: first-order high-pass then low-pass filter, using Q1.15 coefficients.
-- `volume_control.v`: mute, 25%, 50%, unity and saturating 200% volume.
-- `mode_selector.v`: combinational selection between registered effect paths.
-- `voice_dsp_core.v`: instantiates effect modules and aligns mode with registered outputs.
-- `top_module.v`: board-independent top-level wrapper.
+- `DesignCode.v` contains every module below in a single file (compile order: leaf modules first, `top_module` last).
+- `bypass`: one-cycle registered pass-through.
+- `ring_modulator`: square-carrier polarity modulation with configurable half-period.
+- `echo_unit`: 4,096-sample circular delay memory and Q1.15 echo gain.
+- `radio_filter`: first-order high-pass then low-pass filter, using Q1.15 coefficients.
+- `volume_control`: mute, 25%, 50%, unity and saturating 200% volume.
+- `mode_selector`: combinational selection between registered effect paths.
+- `voice_dsp_core`: instantiates effect modules and aligns mode with registered outputs.
+- `top_module`: board-independent top-level wrapper.
 - `tb_audio_file.v`: file-driven testbench for recorded audio samples.
